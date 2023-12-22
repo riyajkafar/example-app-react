@@ -15,6 +15,6 @@ class Brand extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    
     // Add any additional methods or relationships here
 }
