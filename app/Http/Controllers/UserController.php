@@ -51,9 +51,9 @@ class UserController extends Controller
             'user_type' => 'required|in:superadmin,admin,shopowner,user',
         ]);
 
-        $request->user()->users()->create($validatedData);
+        User::create($validatedData);
 
-        return redirect()->route('admin/index')->with('success', 'User created successfully!');
+        return redirect()->route('admin.index')->with('success', 'User created successfully!');
     }
 
     /**
@@ -86,27 +86,32 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-
+    
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
-              
                 'required',
                 'email',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'password'=> ['required','min:8'],
-            
+            'password' => 'nullable|min:8', // Make the password field nullable
             'user_type' => 'required|in:superadmin,admin,shopowner,user',
         ]);
+    
+        // Check if a new password is provided
         if ($request->password) {
-            $user->password = bcrypt($request->password);
+            // Update the validated data with the hashed password using bcrypt
+            $validatedData['password'] = bcrypt($request->password);
+        } else {
+            // If no new password is provided, remove the 'password' key from the array
+            unset($validatedData['password']);
         }
+    
         $user->update($validatedData);
-
+    
         return redirect()->route('admin.index')->with('success', 'User updated successfully!');
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */

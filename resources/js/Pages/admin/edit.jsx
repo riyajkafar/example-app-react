@@ -15,6 +15,20 @@ export default function Edit({ auth, user }) {
         user_type: user.user_type || "",
     });
 
+    const handleChange = (field, value) => {
+        // Use a conditional to check if the field is 'password'
+        if (field === 'password') {
+            // Update the field in the form data, whether it's empty or not
+            setData(field, value);
+        } else {
+            // For other fields, update the field in the form data only if the value is not empty
+            if (value.trim() !== '') {
+                setData(field, value);
+            }
+        }
+    };
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -27,8 +41,10 @@ export default function Edit({ auth, user }) {
             .catch((error) => {
                 console.error("Error submitting the form:", error);
             });
-
     };
+
+
+
 
     return (
         <AuthenticatedLayout
@@ -78,7 +94,7 @@ export default function Edit({ auth, user }) {
                                 name="password"
                                 value={data.password}
                                 className="mt-1 block w-full"
-                                onChange={(e) => setData("password", e.target.value)} // Update the password field in the form data
+                                onChange={(e) => handleChange("password", e.target.value)} // Update the password field in the form data conditionally
                             />
                             <InputError message={errors.password} className="mt-2" />
                         </div>
